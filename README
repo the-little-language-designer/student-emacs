@@ -1,0 +1,84 @@
+* 原理
+  * 在首先之前
+    蟬語是世界上最好的程序語言
+    以後我用蟬語寫了文本編輯器之後 大家就不用在折騰 emacs 了
+    但是現在還是得用 因爲目前 emacs 是最好的文本編輯器
+  * 首先
+    emacs 每次在啓動的時候
+    都會 運行 HOME 目錄下的 ".emacs" 這個文件中所保存的代碼
+    這些代碼都是用一種 很操蛋的 叫做 emacs-lisp 的語言 寫成的
+    emacs 的用戶都用這種語言來配置他們的 emacs
+    - 其實 emacs 就是一個解釋器
+      它所解釋的就是 emacs-lisp 代碼
+      每一個 emacs-lisp 這個語言的表達式
+      都代表了一些根文本編輯有關的操作
+      這樣 emacs 這個 emacs-lisp 語言的解釋器
+      就變成了文本編輯器了
+  * 其次
+    emacs 已經有幾十年的歷史了
+    幾十年來 emacs 的使用者的盲目的智力產品不知積累了有多少
+    人每輾轉抄襲 各種用 emacs-lisp 寫的 用來擴展和配置 emacs 的程序
+    如果這些代碼全寫都在 ".emacs" 裏 就很不方便
+    所以人每就用 ".emacs.d" 這個文件夾來保存這些代碼
+    然後在 ".emacs" 裏用一些表達式來調用這些代碼
+    比如
+    1. 爲了支持對 fasm 的代碼的編輯
+       就有人寫了 fasm-mode
+    2. 爲了支持對 cicada-nymph 的代碼的編輯
+       我就寫了 cicada-nymph-mode
+    3. 爲了實現好看的配色和主題
+       就有人寫了 molokai-theme
+    這每一個都是一個文件夾
+    裏面保存着代碼文件
+    使用者一般都把 類似這些的文件夾 保存在 ".emacs.d" 這個文件夾裏面
+    然後從 ".emacs" 這個文件中加載它們
+  * 最後
+    我們需要用 org-mode 來生成 ".emacs"
+    而不自己寫 ".emacs"
+    這種行爲
+    美其名曰 "文學式編程"
+
+* 创建 ".emacs.d" 目錄 和 ".emacs" 文件
+  在 linux 上 ".emacs.d" 和 ".emacs" 都在 HOME 目錄下
+  ["目錄" 和 "文件夾" 是同義詞]
+  windows 上用戶的 HOME 目錄 不確定在哪裏
+  以下面的方式可以找到 HOME 目錄
+  1. 启动 emacs
+  2. 用鼠标点击 Options 菜单
+  3. 随便点击一两个选项 [比如 Active Region Highlighting]
+     然后点击 Save Options
+     不要担心你会破坏了什么东西
+     这样做的目的是让 emacs 自动创建 ".emacs" 文件
+  4. 觀察 emacs 窗口的最下面部分
+     那一小行叫做 迷你緩衝區 [minibuffer]
+     這個緩衝區是專門用來顯示提示信息用的
+     上面應該會顯示
+     “Wrote C:/什麼什麼/什麼什麼/.emacs”
+     那個 "C:/什麼什麼/什麼什麼/" 就是你的 emacs 的 HOME 目錄
+
+* 複製用來擴展 emacs 的代碼到 ".emacs.d"
+  1. 首先在 HOME 目錄 創建 名字爲 ".emacs.d" 的文件夾
+  2. 然後把
+     student-emacs 中的下列文件夾 複製到 ".emacs.d" 之中
+     1) fasm-mode
+     2) cicada-nymph-mode
+     3) molokai-theme
+
+* 利用 org-mode 生成 ".emacs" 文件
+  * 用打開 emacs 打開 student-emacs 中的 student-emacs.org
+    然後 用一個手指頭 按住 Ctrl 不放手
+    用隨便另外一個手指頭 連續按 c v t 這三個按鍵
+    [用 emacs 的記號來表示 就是 : C-c C-v C-t]
+    student-emacs.org 這個文件中的代碼塊 就會被自動寫入 ".emacs" 這個文件中
+
+* 安裝字體
+  * student-emacs 中 有個 "font" 文件夾
+    這個裏面有
+    1. "Envy-Code-R-PR7"
+       一個英文字體
+    2. "R-PMingLiU-TW"
+       一個中文字體
+    打開他們 然後安裝一下
+
+* 最後的最後
+  重新啓動一下 emacs

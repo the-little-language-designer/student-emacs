@@ -1,0 +1,299 @@
+#+TITLE:  student emacs ^-^
+#+AUTHOR: 謝宇恆 / XIE Yuheng
+#+EMAIL:  xyheme@gmail.com
+
+* ===================================
+* note
+  molokai-theme
+  cicada-nymph-mode
+  fasm-mode
+* key binding
+** unbinding
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   ;; orientally: transpose-words
+   (global-set-key (kbd "M-t") 'nil)
+   #+end_src
+** hippie-expand
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (global-set-key (kbd "C-h") 'hippie-expand)
+   (setq hippie-expand-try-functions-list
+             '(try-expand-dabbrev
+           try-expand-dabbrev-visible
+           try-expand-dabbrev-all-buffers
+           try-expand-dabbrev-from-kill
+           try-complete-file-name-partially
+           try-complete-file-name
+           try-expand-all-abbrevs
+           try-expand-list
+           try-expand-line
+           pcomplete
+           try-complete-lisp-symbol-partially
+           try-complete-lisp-symbol
+           ))
+   #+end_src
+** prefix-command and examples
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (define-prefix-command 'C-s-map)
+   (global-set-key (kbd "C-s") 'C-s-map)
+   #+end_src
+** cruise
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (defun window-> () (interactive) (other-window +1))
+   (defun <-window () (interactive) (other-window -1))
+
+   ;; 没有使用<C-tab>
+   ;; 因为<C-tab>需要在org-mode中使用
+   ;; 因为按<tab>的时候可以不放开Ctrl是方便的
+   (global-set-key (kbd "M-<tab>") 'window->)
+   (global-set-key (kbd "M-=") 'window->)
+   (global-set-key (kbd "M--") '<-window)
+   ;; (global-set-key (kbd "M-0") 'window->)
+   ;; (global-set-key (kbd "M-9") '<-window)
+
+   (global-set-key (kbd "C-x .") 'next-buffer)
+   (global-set-key (kbd "C-x ,") 'previous-buffer)
+
+   (global-set-key (kbd "C-M-.") 'next-buffer)
+   (global-set-key (kbd "C-M-,") 'previous-buffer)
+
+   (global-set-key (kbd "M-p") 'backward-paragraph)
+   (global-set-key (kbd "M-n") 'forward-paragraph)
+   #+end_src
+** line wrap
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (global-set-key (kbd "C-M-g") 'global-visual-line-mode)
+   #+end_src
+** comment
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (define-prefix-command '<menu>-map)
+   (global-set-key (kbd "<menu>") '<menu>-map)
+
+   (global-set-key (kbd "<menu> '") 'comment-region)
+   (global-set-key (kbd "<menu> ;") 'uncomment-region)
+   #+end_src
+** edit
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   ;; backward-kill-sentence
+
+   ;; (defun say-not-binding ()
+   ;;   (interactive)
+   ;;   (message "this key have not binding"))
+
+   (global-set-key (kbd "C-x <backspace>") 'delete-backward-char)
+   #+end_src
+** search
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (global-set-key (kbd "C-t") 'isearch-forward)
+   (add-hook 'isearch-mode-hook
+             (lambda ()
+                   (define-key isearch-mode-map (kbd "C-t") 'isearch-repeat-forward)
+                   ))
+   #+end_src
+** query-replace
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (global-set-key (kbd "M-q") 'query-replace)
+   #+end_src
+* eshell
+** eshell-prompt-function
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (set 'eshell-prompt-function
+     (function
+      (lambda ()
+        (concat (number-to-string eshell-last-command-status)
+                "  " (eshell/pwd) " "
+                (newline)
+                ;; (if (= (user-uid) 0) " # " " $ ")
+                ))))
+   #+end_src
+** my-switch-to-eshell
+   下面是黄金搭档``previous-buffer''
+   + scheme的repl也是这样开启的
+   也就是说C-s C-e这个键绑定的切换函数
+   只帮助在当前buffer和主要的那个名叫*eshell*的buffer之间切换
+   并且在这之间到别的buffer的切换就将破坏这个函数的效果
+   这也许是合理的 也许不是
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (defun my-switch-to-eshell ()
+     (interactive)
+
+     (cond
+      ((not (frame-parameter nil 'explicit-name))
+       (eshell))
+      (t
+       ;; at most, 9 eshell, opened by emacsclient, with eshell as frame-name
+       (eshell
+        (- (elt (string-to-vector (frame-parameter nil 'name))
+                9)
+           48))))
+
+     (local-set-key (kbd "C-s C-e") 'previous-buffer))
+
+   (global-set-key (kbd "C-s C-e") 'my-switch-to-eshell)
+   #+end_src
+* theme
+  #+begin_src emacs-lisp :tangle ~/.emacs
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/molokai/")
+
+  (setq molokai-theme-kit t)
+  (load-theme 'molokai t)
+  #+end_src
+* font
+** test
+   λλλλλλ|
+   中英等宽测试|
+   sdasddassaas|
+   λλλλλλλλλλλλ|
+** 黑
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (set-fontset-font t 'han (font-spec :name "H\-明蘭" :size 20))
+   #+end_src
+** 英
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (set-face-attribute 'default nil :family "Envy Code R" :height 140)
+   #+end_src
+* cicada-nymph-mode
+  #+begin_src emacs-lisp :tangle ~/.emacs
+  (add-to-list 'load-path "~/.emacs.d/cicada-nymph-mode/")
+  (require 'cicada-nymph-mode)
+  (require 'inferior-cicada-nymph-mode)
+
+  ;; (define-prefix-command 'C-s-map)
+  ;; (global-set-key (kbd "C-s") 'C-s-map)
+  (defun switch-to-buffer-*cicada-nymph* ()
+    (interactive)
+    (if (member-string? "*cicada-nymph*" (mapcar 'buffer-name (buffer-list)))
+            (let ()
+          (switch-to-buffer "*cicada-nymph*")
+          (local-set-key (kbd "C-s C-d") 'previous-buffer))
+          (let ()
+            (run-cicada-nymph "cicada-nymph"))))
+  (global-set-key (kbd "C-s C-d") 'switch-to-buffer-*cicada-nymph*)
+
+  (add-hook 'cicada-nymph-mode-hook
+   (lambda ()
+     (local-set-key (kbd "C-h") 'hippie-expand)
+     (local-set-key (kbd "M-q") 'query-replace)
+     (local-set-key (kbd "C-c C-c")
+                    'cicada-nymph-send-region-and-split-window)
+     (local-set-key (kbd "C-<tab>")
+                    'cicada-nymph-send-line-and-split-window-and-goto-next-line)))
+  #+end_src
+* fasm-mode
+  #+begin_src emacs-lisp :tangle ~/.emacs
+  (add-to-list 'load-path "~/.emacs.d/fasm-mode/")
+  (require 'fasm-mode)
+  (add-to-list 'auto-mode-alist '("\\.fasm$" . fasm-mode))
+  (add-to-list 'auto-mode-alist '("\\.inc$"  . fasm-mode))
+  (add-to-list 'auto-mode-alist '("\\.s$"    . fasm-mode))
+
+  (defun fasm-indent-line-and-next-line ()
+    (interactive)
+    (fasm-indent-line)
+    (next-line))
+
+  (add-hook 'fasm-mode-hook
+            (lambda ()
+                  ;; (setq tab-width 13)
+                  ;; (setq indent-tabs-mode t)
+                  ;; (local-set-key (kbd "<tab>") 'fasm-indent-line)
+                  ;; (local-set-key (kbd "C-<tab>") 'fasm-indent-line-and-next-line)
+                  ;; (turn-off-indent)
+                  ))
+  #+end_src
+* org-mode
+** **-in-org
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (defun **-in-org ()
+     "abc ==> *abc*"
+     (interactive)
+     (progn
+           (insert "*")
+           (org-end-of-line)
+           (insert "*")))
+   #+end_src
+** key binding
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (eval-after-load 'org
+     '(progn
+
+       ;; **-in-org
+       (define-key org-mode-map (kbd "M-*") '**-in-org)
+
+       ;; cruise
+       (define-key org-mode-map (kbd "M-n") 'outline-next-visible-heading)
+       (define-key org-mode-map (kbd "M-p") 'outline-previous-visible-heading)
+       (define-key org-mode-map (kbd "<M-up>") nil)
+       (define-key org-mode-map (kbd "<M-down>") nil)
+
+       ;; text migration
+       ;; ``org-metaup'' and ``org-metadown''
+       ;; are really dangerous functions
+       ;; so it should be as hard as possible to mis-type it
+       (define-key org-mode-map (kbd "C-M-p") 'org-metaup)
+       (define-key org-mode-map (kbd "C-M-n") 'org-metadown)
+
+       ;; in babel
+       (define-key org-mode-map (kbd "M-.") 'org-babel-next-src-block)
+       (define-key org-mode-map (kbd "M-,") 'org-babel-previous-src-block)
+       (define-key org-mode-map (kbd "C-s C-s") 'org-edit-src-code)
+
+       ))
+
+   (add-hook
+    'org-src-mode-hook
+    (lambda ()
+      (local-set-key (kbd "C-s C-s") 'org-edit-src-exit)
+      ))
+   #+end_src
+** variable
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   ;(setq org-startup-indented t)
+   (setq org-startup-indented nil)
+   (setq org-babel-no-eval-on-ctrl-c-ctrl-c t)
+   ;; (setq org-agenda-window-setup )
+   ;; (setq org-agenda-restore-windows-after-quit )
+   #+end_src
+** todo-keyword
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (setq org-todo-keywords
+         '((sequence "><" "|" "><><" "|" "><><><")
+           (sequence "todo")
+           (sequence "待")
+           (sequence "note" "|" "test")
+           (sequence "記" "|" "測")
+           ))
+   #+end_src
+** [babel] edit
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (add-hook 'org-mode-hook (setq org-src-preserve-indentation nil))
+   (add-hook 'org-mode-hook (setq org-edit-src-content-indentation 0))
+   (add-hook 'org-mode-hook (setq org-src-window-setup 'current-window))
+   (add-hook 'org-mode-hook (setq org-src-fontify-natively t))
+
+   ;; (add-hook 'org-mode-hook (setq org-src-tab-acts-natively t))
+   ;; if turn on the above variable
+   ;; structure-template-alist will be unable to use
+
+   (add-hook 'org-mode-hook (setq org-src-ask-before-returning-to-edit-buffer nil))
+   #+end_src
+** [babel] evaluation
+   #+begin_src emacs-lisp :tangle ~/.emacs
+   (add-hook 'org-mode-hook (setq org-confirm-babel-evaluate nil))
+
+   ;; default arguments to use when evaluating a source block
+   (setq org-babel-default-header-args
+         '((:session . "none")
+           (:results . "replace")
+           (:exports . "code")
+           (:cache   . "no")
+           (:noweb   . "yes")
+           (:hlines  . "no")
+           (:tangle  . "no")
+
+           ;; shebang `#!' needs the following
+           ;; (:padline . "no")
+
+           (:padline . "yes")
+           ))
+   #+end_src
+* ===================================
